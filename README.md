@@ -1,5 +1,3 @@
-markdown
-
 # Containerized Recipe Management System
 
 A multi-tier microservices architecture demonstrating container orchestration, reverse proxy configuration, and backend API development.
