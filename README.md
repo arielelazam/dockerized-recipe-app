@@ -25,12 +25,12 @@ This project consists of three main services orchestrated via Docker Compose:
 ### Installation & Execution
 
 1. Clone the repository:
-   ```bash
+   bash
    git clone [https://github.com/yourusername/dockerized-recipe-app.git](https://github.com/yourusername/dockerized-recipe-app.git)
    cd dockerized-recipe-app
-   ```
+   
 
-````
+
 
 2. Create a `.env` file in the root directory (you can use the provided `.env.example` as a template).
 3. Build and run the containers:
