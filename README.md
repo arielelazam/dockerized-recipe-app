@@ -1,4 +1,5 @@
-````markdown
+markdown
+
 # Containerized Recipe Management System
 
 A multi-tier microservices architecture demonstrating container orchestration, reverse proxy configuration, and backend API development.
@@ -30,6 +31,7 @@ This project consists of three main services orchestrated via Docker Compose:
    git clone [https://github.com/yourusername/dockerized-recipe-app.git](https://github.com/yourusername/dockerized-recipe-app.git)
    cd dockerized-recipe-app
    ```
+
 ````
 
 2. Create a `.env` file in the root directory (you can use the provided `.env.example` as a template).
@@ -51,3 +53,4 @@ docker-compose up -d --build
 - `/dashboard` - Frontend static files (HTML/CSS/JS).
 - `/nginx` - Nginx configuration files.
 - `docker-compose.yml` - Services orchestration.
+````
