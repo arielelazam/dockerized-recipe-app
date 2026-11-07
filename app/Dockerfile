@@ -1,19 +1,19 @@
-# קובץ ה"מתכון" לבניית image מסוג זה.
+# The blueprint for building the application image.
 
-# אומר לדוקר להשתמש בפייתון בגרסה הספציפית הזאת
+# Base image: Instructs Docker to use this specific Python version
 FROM python:3.9-slim
 
-# אומר שכל הפקודות שיקרו בתוך הקונטיינר קורות בתוך התיקייה הזאת
+# Set the working directory inside the container for all subsequent commands
 WORKDIR /app
 
-# מבצעים העתקה של הדרישות שנצטרך להתקין מהמחשב הפיזי שלנו לתוך התיקייה הנוכחית של הקונטיינר
+# Copy the dependencies file from the host machine to the container's current directory
 COPY requirements.txt .
 
-# פקודה שתרוץ בזזמן הבנייה ותתקין את כל הספריות הנדרשות בתוך ה-imag
+# Run during the build process to install all required Python libraries into the image
 RUN pip install -r requirements.txt
 
-# ביצוע העתקת כל שאר הקבצים מהתיקייה הנוכחית לתוך הקונטיינר
+# Copy the rest of the application source code from the current directory into the container
 COPY . .
 
-# הפקודה שתרוץ כשהקונטיינר עולה
+# The default command to execute when the container starts
 CMD ["python", "recipe_app.py"]

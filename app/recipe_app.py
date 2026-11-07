@@ -1,13 +1,13 @@
-# קובץ המלאי והלוגיקה של התוכנית
+# Inventory and business logic of the application
 
 import os
 from flask import Flask, jsonify
 
-app = Flask(__name__) # יצרת השרת שישמש אותנו
+app = Flask(__name__) # Initialize the Flask server application
 
-USER_NAME = os.environ.get("USER_NAME", "Guest") # שליפת שם המשתמש
+USER_NAME = os.environ.get("USER_NAME", "Guest") # Retrieve the username from environment variables
 
-# המתכונים הקיימים
+# Available recipes
 RECIPES = {
     "Omelette": ["eggs", "butter", "salt"],
     "Pasta": ["pasta", "tomatoes", "garlic"],
@@ -17,7 +17,7 @@ RECIPES = {
     "Rice with vegetables": ["rice", "carrot", "onion"]
 }
 
-# הפונקציה שניגשת למלאי ומחזירה את המוצרים הזמינים
+# Function to read the inventory file and return available items
 def read_inventory():
     try:
         with open("/data/inventory.txt", "r") as f:
@@ -26,7 +26,9 @@ def read_inventory():
     except FileNotFoundError:
         return []
 
-# הפונקציה שתקבל את המוצרים הזמינים ומבין המתכונים שכל מוצריהם קיימים במלאי, תמליץ על זה שמורכב מכמה שיותר מוצרים - ארוחה עשירה יותר
+# Function that receives the available inventory and recommends the recipe
+# with the highest number of ingredients, provided all its ingredients are in stock
+# (prioritizing richer meals)
 def suggest_recipe(inventory):
     best_recipe = None
     best_score = 0
@@ -39,14 +41,14 @@ def suggest_recipe(inventory):
                 best_recipe = recipe
     return best_recipe, best_score
 
-@app.route("/api") # נגדיר שאם מישהו פונה לכתובת ה-IP של הקונטיינר בפורט 5000 עם סיומת api/ הפונקציה api תופעל
+@app.route("/api") # Define the endpoint for requests directed to /api
 def api():
-    inventory = read_inventory() # נשלוף את המלאי הזמין
-    recipe, score = suggest_recipe(inventory) # נקבל את המתכון המומלץ ואת הניקוד שלו
+    inventory = read_inventory() # Retrieve available inventory
+    recipe, score = suggest_recipe(inventory) # Get the recommended recipe and its score
 
-    if not recipe or score == 0: # אם לא התקבל מתכון מומלץ תוחזר ללקוח הודעה שלא נמצא מתכון זמין
+    if not recipe or score == 0: # If no suitable recipe is found, return a fallback message
         return jsonify({"user": USER_NAME, "message": "No ingredients found to suggest a recipe", "inventory": inventory})
-    return jsonify({"user": USER_NAME, "recipe": recipe, "matched_ingredients": score, "inventory": inventory}) # נחזיר ללקוח הודעה שתכיל את פרטי המתכון
+    return jsonify({"user": USER_NAME, "recipe": recipe, "matched_ingredients": score, "inventory": inventory}) # Return the recommended recipe details to the client
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

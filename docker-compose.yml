@@ -1,22 +1,21 @@
-# קובץ ה-docker-compose. משמש כ-"מנהל פרוייקטים". אחראי על תפעול הקונטיינרים בתכונית
+# The docker-compose file. Acts as the "project manager". Responsible for orchestrating the application containers
 
-
-services: # ריכוז הקונטיינרים
-  app: # קונטיינר ראשון שיש לנו - קונטיינר האפליקציה
-    build: ./app # פקודה האומרת לדוקר "לך לתיקייה הזאת ותבנה את ה-Image לפי ה-Dockerfile שיש שם"
-    env_file: # ביצוע טעינת משתני סביבה (כמו שם המשתמש) מקובץ ספציפי
+services: # Definitions for all services/containers
+  app: # First container - The application container
+    build: ./app # Instructs Docker to build the image from the Dockerfile located in this directory
+    env_file: # Load environment variables (like the username) from a specific file
       - .env
-    volumes: # מה שמהווה ה"זיכרון המשותף" בין הדוקר למחשב. לשניהם תהיה גישה לקובץ הזה (המקרר)
+    volumes: # Mounts the local file to the container, acting as shared storage (the "fridge")
       - ./inventory.txt:/data/inventory.txt
-    expose: # בתוך הרשת הפנימית של דוקר, זה הפורט שיוקצה וככה הפרוקסי יוכל לתקשר עם האפליקציה
+    expose: # Exposes the port on the internal Docker network so the proxy can communicate with the app
       - "5000"
 
-  proxy: # קונטיינר שני שיש לנו - קונטיינר הפרוקסי (קונטיינר מוכן שייבאנו מבחוץ)
-    image: nginx:alpine # דוקר לא בונה image, אלא הוא מוריד אחד מוכן של שרת הפרוקסי
-    ports: # קשור לחשיפה לבחוץ. צד שמאל זה המחשב וצד ימין זה הקונטיינר. כל מי שיפנה למחשב בפורט 80 יגיע לקונטייר הזה
+  proxy: # Second container - The proxy container (using a pre-built external image)
+    image: nginx:alpine # Pulls a pre-built Nginx image instead of building a new one
+    ports: # Port mapping to the outside world. Host port (left) mapped to container port (right)
       - "80:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf # דורס את הגדרות ברירת המחדל שלו עם מה שאנחנו הגדרנו
-      - ./dashboard:/usr/share/nginx/html # מחבר את תיקיית Dashboard לתיקייה שבה הפרוקסי מחפש קבצי אינטרנט להצגה - בקיצור מקשר את התיקייה עם ה-HTML לפרוקסי
-    depends_on: # סדר פעולות. אומר לדוקר "אל תפעיל את הפרוקסי לפני שהאפליקציה עלתה ועבדה"
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf # Overrides the default Nginx configuration with our custom config
+      - ./dashboard:/usr/share/nginx/html # Mounts the Dashboard directory to the Nginx web root to serve the HTML files
+    depends_on: # Defines startup order. Tells Docker to wait for the 'app' service to be running before starting the proxy
       - app
