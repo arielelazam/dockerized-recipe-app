@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: #38bdf8;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .card {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid #334155;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #38bdf8;
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .recipe-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-bottom: 8px;
+        }
+
+        .recipe-meta {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .inventory-list {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .inventory-list li {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+        }
+
+        .greeting {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #22c55e;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .refresh-btn {
+            margin-top: 36px;
+            padding: 12px 32px;
+            background: #38bdf8;
+            color: #0f172a;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: #7dd3fc;
+        }
+
+        footer {
+            margin-top: 48px;
+            color: #334155;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🏠 Home Dashboard</h1>
+    <p>Your smart home management system</p>
+</header>
+
+<div class="cards">
+    <div class="card">
+        <h2>Welcome</h2>
+        <div class="greeting" id="greeting">Loading...</div>
+        <div class="recipe-meta" style="margin-top:8px">
+            <span class="status-dot"></span>System is running
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Tonight's Recipe</h2>
+        <div class="recipe-name" id="recipe">Loading...</div>
+        <div class="recipe-meta" id="recipe-meta"></div>
+    </div>
+
+    <div class="card">
+        <h2>Fridge Inventory</h2>
+        <ul class="inventory-list" id="inventory">
+            <li>Loading...</li>
+        </ul>
+    </div>
+</div>
+
+<button class="refresh-btn" onclick="fetchData()">🔄 Refresh</button>
+
+<footer>Home Architect — Powered by Docker</footer>
+
+<script>
+    async function fetchData() {
+        try {
+            const res = await fetch('/api');
+            const data = await res.json();
+
+            document.getElementById('greeting').textContent = `Hello, ${data.user}!`;
+
+            if (data.recipe) {
+                document.getElementById('recipe').textContent = data.recipe;
+                document.getElementById('recipe-meta').textContent =
+                    `${data.matched_ingredients} matching ingredients found`;
+            } else {
+                document.getElementById('recipe').textContent = 'No suggestion';
+                document.getElementById('recipe-meta').textContent = data.message;
+            }
+
+            const inventoryEl = document.getElementById('inventory');
+            inventoryEl.innerHTML = '';
+            data.inventory.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                inventoryEl.appendChild(li);
+            });
+
+        } catch (err) {
+            document.getElementById('recipe').textContent = 'Error loading data';
+        }
+    }
+
+    fetchData();
+</script>
+
+</body>
+</html>
