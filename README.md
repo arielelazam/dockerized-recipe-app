@@ -35,10 +35,9 @@ This project consists of three main services orchestrated via Docker Compose:
 2. Create a `.env` file in the root directory (you can use the provided `.env.example` as a template).
 3. Build and run the containers:
 
-```bash
+bash
 docker-compose up -d --build
 
-```
 
 4. Access the application:
 
@@ -51,4 +50,3 @@ docker-compose up -d --build
 - `/dashboard` - Frontend static files (HTML/CSS/JS).
 - `/nginx` - Nginx configuration files.
 - `docker-compose.yml` - Services orchestration.
-````
